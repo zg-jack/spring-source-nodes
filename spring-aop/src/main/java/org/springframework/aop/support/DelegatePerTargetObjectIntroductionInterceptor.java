@@ -67,13 +67,19 @@ public class DelegatePerTargetObjectIntroductionInterceptor extends Introduction
 
 
 	public DelegatePerTargetObjectIntroductionInterceptor(Class<?> defaultImplType, Class<?> interfaceType) {
+		//添加的新功能的类
 		this.defaultImplType = defaultImplType;
+
+		//新功能类的接口
 		this.interfaceType = interfaceType;
 		// Create a new delegate now (but don't store it in the map).
 		// We do this for two reasons:
 		// 1) to fail early if there is a problem instantiating delegates
 		// 2) to populate the interface map once and once only
+		//新功能类反射实例化
 		Object delegate = createNewDelegate();
+
+		//获取新功能类的接口
 		implementInterfacesOnObject(delegate);
 		suppressInterface(IntroductionInterceptor.class);
 		suppressInterface(DynamicIntroductionAdvice.class);

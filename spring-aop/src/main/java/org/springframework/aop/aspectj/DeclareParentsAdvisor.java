@@ -49,6 +49,8 @@ public class DeclareParentsAdvisor implements IntroductionAdvisor {
 	 * @param defaultImpl the default implementation class
 	 */
 	public DeclareParentsAdvisor(Class<?> interfaceType, String typePattern, Class<?> defaultImpl) {
+		//interfaceType 新功能的接口
+		//typePattern需要引介增强的 目标类
 		this(interfaceType, typePattern,
 				new DelegatePerTargetObjectIntroductionInterceptor(defaultImpl, interfaceType));
 	}
@@ -74,8 +76,10 @@ public class DeclareParentsAdvisor implements IntroductionAdvisor {
 		this.advice = interceptor;
 		this.introducedInterface = interfaceType;
 
-		// Excludes methods implemented.
+		// Excludes methods implemented.  这个东西就是一个PointCut，只是这个pointCut值拦截 typePattern 这个目标类而已
 		ClassFilter typePatternFilter = new TypePatternClassFilter(typePattern);
+
+		//主要不是增强类的类型就算匹配
 		ClassFilter exclusion = (clazz -> !this.introducedInterface.isAssignableFrom(clazz));
 		this.typePatternClassFilter = ClassFilters.intersection(typePatternFilter, exclusion);
 	}
