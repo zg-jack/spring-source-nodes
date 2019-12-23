@@ -185,7 +185,7 @@ public abstract class AbstractBeanDefinitionReader implements BeanDefinitionRead
 		Assert.notNull(resources, "Resource array must not be null");
 		int count = 0;
 		for (Resource resource : resources) {
-			//æ¨¡æ¿è®¾è®¡æ¨¡å¼ï¼Œè°ƒç”¨åˆ°å­ç±»ä¸­çš„æ–¹æ³•
+			//Ä£°åÉè¼ÆÄ£Ê½£¬µ÷ÓÃµ½×ÓÀàÖĞµÄ·½·¨
 			count += loadBeanDefinitions(resource);
 		}
 		return count;
@@ -221,11 +221,11 @@ public abstract class AbstractBeanDefinitionReader implements BeanDefinitionRead
 		if (resourceLoader instanceof ResourcePatternResolver) {
 			// Resource pattern matching available.
 			try {
-				//æŠŠå­—ç¬¦ä¸²ç±»å‹çš„xmlæ–‡ä»¶è·¯å¾„ï¼Œå½¢å¦‚ï¼šclasspath*:user/**/*-context.xml,è½¬æ¢æˆResourceå¯¹è±¡ç±»å‹ï¼Œå…¶å®å°±æ˜¯ç”¨æµ
-				//çš„æ–¹å¼åŠ è½½é…ç½®æ–‡ä»¶ï¼Œç„¶åå°è£…æˆResourceå¯¹è±¡ï¼Œä¸é‡è¦ï¼Œå¯ä»¥ä¸çœ‹
+				//°Ñ×Ö·û´®ÀàĞÍµÄxmlÎÄ¼şÂ·¾¶£¬ĞÎÈç£ºclasspath*:user/**/*-context.xml,×ª»»³ÉResource¶ÔÏóÀàĞÍ£¬ÆäÊµ¾ÍÊÇÓÃÁ÷
+				//µÄ·½Ê½¼ÓÔØÅäÖÃÎÄ¼ş£¬È»ºó·â×°³ÉResource¶ÔÏó£¬²»ÖØÒª£¬¿ÉÒÔ²»¿´
 				Resource[] resources = ((ResourcePatternResolver) resourceLoader).getResources(location);
 
-				//ä¸»è¦çœ‹è¿™ä¸ªæ–¹æ³• ** é‡è¦ç¨‹åº¦ 5
+				//Ö÷Òª¿´Õâ¸ö·½·¨ ** ÖØÒª³Ì¶È 5
 				int count = loadBeanDefinitions(resources);
 				if (actualResources != null) {
 					Collections.addAll(actualResources, resources);
@@ -258,7 +258,7 @@ public abstract class AbstractBeanDefinitionReader implements BeanDefinitionRead
 	public int loadBeanDefinitions(String... locations) throws BeanDefinitionStoreException {
 		Assert.notNull(locations, "Location array must not be null");
 		int count = 0;
-		//é…ç½®æ–‡ä»¶æœ‰å¤šä¸ªï¼ŒåŠ è½½å¤šä¸ªé…ç½®æ–‡ä»¶
+		//ÅäÖÃÎÄ¼şÓĞ¶à¸ö£¬¼ÓÔØ¶à¸öÅäÖÃÎÄ¼ş
 		for (String location : locations) {
 			count += loadBeanDefinitions(location);
 		}

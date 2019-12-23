@@ -154,6 +154,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 		Assert.notNull(singletonFactory, "Singleton factory must not be null");
 		synchronized (this.singletonObjects) {
 			if (!this.singletonObjects.containsKey(beanName)) {
+				System.out.println("========set value to 3 level cache->beanName->" + beanName + "->value->" + singletonFactory);
 				this.singletonFactories.put(beanName, singletonFactory);
 				this.earlySingletonObjects.remove(beanName);
 				this.registeredSingletons.add(beanName);
@@ -194,6 +195,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 						//从工厂中拿到对象
 						singletonObject = singletonFactory.getObject();
 						//升级到二级缓存
+						System.out.println("======get instance from 3 level cache->beanName->" + beanName + "->value->" + singletonObject );
 						this.earlySingletonObjects.put(beanName, singletonObject);
 						//删除三级缓存
 						this.singletonFactories.remove(beanName);
@@ -235,6 +237,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 					this.suppressedExceptions = new LinkedHashSet<>();
 				}
 				try {
+					//如果这里有返回值，就代表这个bean已经结束创建了，已经完全创建成功
 					singletonObject = singletonFactory.getObject();
 					newSingleton = true;
 				}
@@ -262,6 +265,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 					afterSingletonCreation(beanName);
 				}
 				if (newSingleton) {
+					System.out.println("====beanName==" + beanName + "===instance end====");
 					//创建对象成功时，把对象缓存到singletonObjects缓存中,bean创建完成时放入一级缓存
 					addSingleton(beanName, singletonObject);
 				}

@@ -229,9 +229,10 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			@Nullable final Object[] args, boolean typeCheckOnly) throws BeansException {
 
 		final String beanName = transformedBeanName(name);
+		System.out.println("====beanName=="+beanName+"===instance begin====");
 		Object bean;
 
-		//从缓存中拿实例
+			//从缓存中拿实例
 		// Eagerly check singleton cache for manually registered singletons.
 		Object sharedInstance = getSingleton(beanName);
 		//如果缓存里面能拿到实例
