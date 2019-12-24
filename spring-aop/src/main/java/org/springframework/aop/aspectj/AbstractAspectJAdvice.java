@@ -385,11 +385,14 @@ public abstract class AbstractAspectJAdvice implements Advice, AspectJPrecedence
 
 		int numUnboundArgs = this.parameterTypes.length;
 		Class<?>[] parameterTypes = this.aspectJAdviceMethod.getParameterTypes();
+		//第一个参数必须要是Joinpoint类型的参数
 		if (maybeBindJoinPoint(parameterTypes[0]) || maybeBindProceedingJoinPoint(parameterTypes[0]) ||
 				maybeBindJoinPointStaticPart(parameterTypes[0])) {
 			numUnboundArgs--;
 		}
 
+		//像这种情况 @Around("pc1()") around(ProceedingJoinPoint joinPoint)
+		//方法只有一个参数，numUnboundArgs这里就是0，不需要参数绑定了
 		if (numUnboundArgs > 0) {
 			// need to bind arguments by name as returned from the pointcut match
 			bindArgumentsByName(numUnboundArgs);
@@ -473,6 +476,7 @@ public abstract class AbstractAspectJAdvice implements Advice, AspectJPrecedence
 		Assert.state(this.argumentNames != null, "No argument names available");
 		this.argumentBindings = new HashMap<>();
 
+		//获取方法的参数数量
 		int numExpectedArgumentNames = this.aspectJAdviceMethod.getParameterCount();
 		if (this.argumentNames.length != numExpectedArgumentNames) {
 			throw new IllegalStateException("Expecting to find " + numExpectedArgumentNames +
@@ -480,6 +484,7 @@ public abstract class AbstractAspectJAdvice implements Advice, AspectJPrecedence
 					this.argumentNames.length + " arguments.");
 		}
 
+		//除了JointPoint类型的参数，还剩参数的数量
 		// So we match in number...
 		int argumentIndexOffset = this.parameterTypes.length - numArgumentsLeftToBind;
 		for (int i = argumentIndexOffset; i < this.argumentNames.length; i++) {
@@ -510,6 +515,7 @@ public abstract class AbstractAspectJAdvice implements Advice, AspectJPrecedence
 			}
 		}
 
+		//把参数对应的名称和对应的参数的类型设置到pointcut中
 		// configure the pointcut expression accordingly.
 		configurePointcutParameters(this.argumentNames, argumentIndexOffset);
 	}
@@ -536,15 +542,18 @@ public abstract class AbstractAspectJAdvice implements Advice, AspectJPrecedence
 			if (i < argumentIndexOffset) {
 				continue;
 			}
+			//returningName和throwingName参数的坑的类型已经记录到变量中了
 			if (argumentNames[i].equals(this.returningName) ||
 				argumentNames[i].equals(this.throwingName)) {
 				continue;
 			}
+			//记录参数名称和类型的对应关系
 			pointcutParameterNames[index] = argumentNames[i];
 			pointcutParameterTypes[index] = methodParameterTypes[i];
 			index++;
 		}
 
+		//把参数的对应关系放到pointCut中
 		this.pointcut.setParameterNames(pointcutParameterNames);
 		this.pointcut.setParameterTypes(pointcutParameterTypes);
 	}

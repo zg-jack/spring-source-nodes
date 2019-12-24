@@ -108,7 +108,7 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 							AspectMetadata amd = new AspectMetadata(beanType, beanName);
 							if (amd.getAjType().getPerClause().getKind() == PerClauseKind.SINGLETON) {
 
-								//创建获取有@Aspectj注解类的实例工厂
+								//创建获取有@Aspect注解类的实例工厂，负责获取有@Aspect注解类的实例
 								MetadataAwareAspectInstanceFactory factory =
 										new BeanFactoryAspectInstanceFactory(this.beanFactory, beanName);
 

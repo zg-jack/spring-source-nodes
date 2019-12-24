@@ -22,7 +22,6 @@ classes/
 buildSrc/build
 /spring-*/build
 /src/asciidoc/build
-#target/
 
 # Eclipse artifacts, including WTP generated manifests
 .classpath
