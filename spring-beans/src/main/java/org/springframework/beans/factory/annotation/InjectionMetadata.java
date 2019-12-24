@@ -87,6 +87,10 @@ public class InjectionMetadata {
 				if (logger.isTraceEnabled()) {
 					logger.trace("Processing injected element of bean '" + beanName + "': " + element);
 				}
+				if(element.isField) {
+					Field field = (Field)element.member;
+					System.out.println("==IOC/DI===beanName==" + beanName + "==field[" + field.getName() +"]-> getBean(" + field.getName() + ")");
+				}
 				element.inject(target, beanName, pvs);
 			}
 		}

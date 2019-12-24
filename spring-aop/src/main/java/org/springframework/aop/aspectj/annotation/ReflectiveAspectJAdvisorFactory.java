@@ -112,17 +112,24 @@ public class ReflectiveAspectJAdvisorFactory extends AbstractAspectJAdvisorFacto
 
 	@Override
 	public List<Advisor> getAdvisors(MetadataAwareAspectInstanceFactory aspectInstanceFactory) {
+		//从工厂中获取有@Aspectj注解的类Class
 		Class<?> aspectClass = aspectInstanceFactory.getAspectMetadata().getAspectClass();
+		//从工厂中获取有@Aspectj注解的类的名称
 		String aspectName = aspectInstanceFactory.getAspectMetadata().getAspectName();
 		validate(aspectClass);
 
+		//创建工厂的装饰类，获取实例只会获取一次
 		// We need to wrap the MetadataAwareAspectInstanceFactory with a decorator
 		// so that it will only instantiate once.
 		MetadataAwareAspectInstanceFactory lazySingletonAspectInstanceFactory =
 				new LazySingletonAspectInstanceFactoryDecorator(aspectInstanceFactory);
 
 		List<Advisor> advisors = new ArrayList<>();
+
+		//这里循环没有@Pointcut注解的方法
 		for (Method method : getAdvisorMethods(aspectClass)) {
+
+			//非常重要重点看看，重要程度 5
 			Advisor advisor = getAdvisor(method, lazySingletonAspectInstanceFactory, advisors.size(), aspectName);
 			if (advisor != null) {
 				advisors.add(advisor);
@@ -135,8 +142,10 @@ public class ReflectiveAspectJAdvisorFactory extends AbstractAspectJAdvisorFacto
 			advisors.add(0, instantiationAdvisor);
 		}
 
+		//判断属性上是否有引介注解
 		// Find introduction fields.
 		for (Field field : aspectClass.getDeclaredFields()) {
+			//判断属性上是否有DeclareParents注解，如果有返回切面
 			Advisor advisor = getDeclareParentsAdvisor(field);
 			if (advisor != null) {
 				advisors.add(advisor);
@@ -177,11 +186,15 @@ public class ReflectiveAspectJAdvisorFactory extends AbstractAspectJAdvisorFacto
 			throw new IllegalStateException("'defaultImpl' attribute must be set on DeclareParents");
 		}
 
+		//返回一个切面
 		return new DeclareParentsAdvisor(
 				introductionField.getType(), declareParents.value(), declareParents.defaultImpl());
 	}
 
 
+	/*
+	* candidateAdviceMethod 候选的Advice方法，候选的增强方法
+	* */
 	@Override
 	@Nullable
 	public Advisor getAdvisor(Method candidateAdviceMethod, MetadataAwareAspectInstanceFactory aspectInstanceFactory,
@@ -189,24 +202,31 @@ public class ReflectiveAspectJAdvisorFactory extends AbstractAspectJAdvisorFacto
 
 		validate(aspectInstanceFactory.getAspectMetadata().getAspectClass());
 
+		//获取pointCut对象，最重要的是从注解中获取表达式
 		AspectJExpressionPointcut expressionPointcut = getPointcut(
 				candidateAdviceMethod, aspectInstanceFactory.getAspectMetadata().getAspectClass());
 		if (expressionPointcut == null) {
 			return null;
 		}
 
+		//创建Advisor切面类，这才是真正的切面类，一个切面类里面肯定要有1、pointCut 2、advice
+		//这里pointCut是expressionPointcut， advice 增强方法是 candidateAdviceMethod
 		return new InstantiationModelAwarePointcutAdvisorImpl(expressionPointcut, candidateAdviceMethod,
 				this, aspectInstanceFactory, declarationOrderInAspect, aspectName);
 	}
 
 	@Nullable
 	private AspectJExpressionPointcut getPointcut(Method candidateAdviceMethod, Class<?> candidateAspectClass) {
+		//从候选的增强方法里面 candidateAdviceMethod  找有有注解
+		//Pointcut.class, Around.class, Before.class, After.class, AfterReturning.class, AfterThrowing.class
+		//并把注解信息封装成AspectJAnnotation对象
 		AspectJAnnotation<?> aspectJAnnotation =
 				AbstractAspectJAdvisorFactory.findAspectJAnnotationOnMethod(candidateAdviceMethod);
 		if (aspectJAnnotation == null) {
 			return null;
 		}
 
+		//创建一个PointCut类，并且把前面从注解里面解析的表达式设置进去
 		AspectJExpressionPointcut ajexp =
 				new AspectJExpressionPointcut(candidateAspectClass, new String[0], new Class<?>[0]);
 		ajexp.setExpression(aspectJAnnotation.getPointcutExpression());
