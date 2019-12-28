@@ -42,6 +42,10 @@ public class TransactionManagementConfigurationSelector extends AdviceModeImport
 	 * {@code AspectJ(Jta)TransactionManagementConfiguration} for {@code PROXY}
 	 * and {@code ASPECTJ} values of {@link EnableTransactionManagement#mode()},
 	 * respectively.
+	 *
+	 * ConfigurationClassPostProcessor
+	 * ConfigurationClassParser  569行掉的
+	 * 收集beanName，然后封装成beanDefinition对象
 	 */
 	@Override
 	protected String[] selectImports(AdviceMode adviceMode) {
