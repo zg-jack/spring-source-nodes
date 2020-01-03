@@ -372,21 +372,21 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 				definition.getPropagationBehavior() == TransactionDefinition.PROPAGATION_NESTED) {
 			//先挂起
 			SuspendedResourcesHolder suspendedResources = suspend(null);
-			if (debugEnabled) {
-				logger.debug("Creating new transaction with name [" + definition.getName() + "]: " + definition);
-			}
-			try {
-				boolean newSynchronization = (getTransactionSynchronization() != SYNCHRONIZATION_NEVER);
-				//创建事务状态对象，其实就是封装了事务对象的一些信息，记录事务状态的
-				DefaultTransactionStatus status = newTransactionStatus(
-						definition, transaction, true, newSynchronization, debugEnabled, suspendedResources);
+				if (debugEnabled) {
+					logger.debug("Creating new transaction with name [" + definition.getName() + "]: " + definition);
+				}
+				try {
+					boolean newSynchronization = (getTransactionSynchronization() != SYNCHRONIZATION_NEVER);
+					//创建事务状态对象，其实就是封装了事务对象的一些信息，记录事务状态的
+					DefaultTransactionStatus status = newTransactionStatus(
+							definition, transaction, true, newSynchronization, debugEnabled, suspendedResources);
 
-				//开启事务,重点看看 DataSourceTransactionObject
-				doBegin(transaction, definition);
+					//开启事务,重点看看 DataSourceTransactionObject
+					doBegin(transaction, definition);
 
-				//开启事务后，改变事务状态
-				prepareSynchronization(status, definition);
-				return status;
+					//开启事务后，改变事务状态
+					prepareSynchronization(status, definition);
+					return status;
 			}
 			catch (RuntimeException | Error ex) {
 				resume(null, suspendedResources);
@@ -1029,11 +1029,13 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 		if (status.isNewTransaction()) {
 			doCleanupAfterCompletion(status.getTransaction());
 		}
+		//判断当前事务有没有挂起的连接
 		if (status.getSuspendedResources() != null) {
 			if (status.isDebug()) {
 				logger.debug("Resuming suspended transaction after completion of inner transaction");
 			}
 			Object transaction = (status.hasTransaction() ? status.getTransaction() : null);
+			//恢复挂起连接的绑定
 			resume(transaction, (SuspendedResourcesHolder) status.getSuspendedResources());
 		}
 	}
