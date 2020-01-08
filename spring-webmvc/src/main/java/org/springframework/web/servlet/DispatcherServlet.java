@@ -1021,6 +1021,7 @@ public class DispatcherServlet extends FrameworkServlet {
 					return;
 				}
 
+				//获取跟HandlerMethod匹配的HandlerAdapter对象
 				// Determine handler adapter for the current request.
 				HandlerAdapter ha = getHandlerAdapter(mappedHandler.getHandler());
 
@@ -1034,10 +1035,12 @@ public class DispatcherServlet extends FrameworkServlet {
 					}
 				}
 
+				//前置过滤器，如果为false则直接返回
 				if (!mappedHandler.applyPreHandle(processedRequest, response)) {
 					return;
 				}
 
+				//调用到Controller具体方法，核心方法调用，重点看看
 				// Actually invoke the handler.
 				mv = ha.handle(processedRequest, response, mappedHandler.getHandler());
 
@@ -1268,6 +1271,7 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * @throws ServletException if no HandlerAdapter can be found for the handler. This is a fatal error.
 	 */
 	protected HandlerAdapter getHandlerAdapter(Object handler) throws ServletException {
+		//根据handlerMethod对象，找到合适的HandlerAdapter对象，这里用到了策略模式
 		if (this.handlerAdapters != null) {
 			for (HandlerAdapter adapter : this.handlerAdapters) {
 				if (adapter.supports(handler)) {
