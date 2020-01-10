@@ -108,6 +108,7 @@ public final class ModelFactory {
 
 		Map<String, ?> sessionAttributes = this.sessionAttributesHandler.retrieveAttributes(request);
 		container.mergeAttributes(sessionAttributes);
+		//调用有@ModelAttribute注解的方法，每次请求都会先被调用到
 		invokeModelAttributeMethods(request, container);
 
 		for (String name : findSessionAttributeArguments(handlerMethod)) {
@@ -145,6 +146,7 @@ public final class ModelFactory {
 				if (!ann.binding()) {
 					container.setBindingDisabled(returnValueName);
 				}
+				//把名称和返回值存储到 ModelAndViewContainer 的map中了
 				if (!container.containsAttribute(returnValueName)) {
 					container.addAttribute(returnValueName, returnValue);
 				}

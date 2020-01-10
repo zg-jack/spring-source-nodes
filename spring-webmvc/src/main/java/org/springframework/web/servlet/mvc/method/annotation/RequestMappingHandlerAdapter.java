@@ -562,9 +562,11 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 	@Override
 	public void afterPropertiesSet() {
 		// Do this first, it may add ResponseBody advice beans
+		//支持@ControllerAdvice注解
 		initControllerAdviceCache();
 
 		if (this.argumentResolvers == null) {
+			//初始化ArgumentResolvers
 			List<HandlerMethodArgumentResolver> resolvers = getDefaultArgumentResolvers();
 			this.argumentResolvers = new HandlerMethodArgumentResolverComposite().addResolvers(resolvers);
 		}
@@ -573,6 +575,7 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 			this.initBinderArgumentResolvers = new HandlerMethodArgumentResolverComposite().addResolvers(resolvers);
 		}
 		if (this.returnValueHandlers == null) {
+			//初始化ReturnValueHandlers
 			List<HandlerMethodReturnValueHandler> handlers = getDefaultReturnValueHandlers();
 			this.returnValueHandlers = new HandlerMethodReturnValueHandlerComposite().addHandlers(handlers);
 		}
@@ -858,9 +861,9 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 
 		ServletWebRequest webRequest = new ServletWebRequest(request, response);
 		try {
-			//获取数据绑定工厂
+			//获取数据绑定工厂  @InitBinder注解支持，没太多用
 			WebDataBinderFactory binderFactory = getDataBinderFactory(handlerMethod);
-			//Model工厂
+			//Model工厂,收集了@ModelAttribute注解的方法
 			ModelFactory modelFactory = getModelFactory(handlerMethod, binderFactory);
 
 			//可调用的方法对象
@@ -880,7 +883,8 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 
 			ModelAndViewContainer mavContainer = new ModelAndViewContainer();
 			mavContainer.addAllAttributes(RequestContextUtils.getInputFlashMap(request));
-			//调用有@ModelAttribute注解的方法
+			//调用有@ModelAttribute注解的方法。每次请求都会调用有@ModelAttribute注解的方法
+			//把@ModelAttribute注解的方法的返回值存储到 ModelAndViewContainer对象的map中了
 			modelFactory.initModel(webRequest, mavContainer, invocableMethod);
 			mavContainer.setIgnoreDefaultModelOnRedirect(this.ignoreDefaultModelOnRedirect);
 
