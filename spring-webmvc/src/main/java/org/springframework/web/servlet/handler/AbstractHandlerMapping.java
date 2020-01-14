@@ -424,9 +424,12 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 
 		//是否是跨域请求,就是查看request请求头中是否有Origin属性
 		if (CorsUtils.isCorsRequest(request)) {
+			//自定义的钩子方法获取跨域配置
 			CorsConfiguration globalConfig = this.corsConfigurationSource.getCorsConfiguration(request);
+			//注解获取跨域配置
 			CorsConfiguration handlerConfig = getCorsConfiguration(handler, request);
 			CorsConfiguration config = (globalConfig != null ? globalConfig.combine(handlerConfig) : handlerConfig);
+			//这里设置了跨域的过滤器CorsInterceptor
 			executionChain = getCorsHandlerExecutionChain(request, executionChain, config);
 		}
 

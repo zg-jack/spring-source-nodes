@@ -166,7 +166,7 @@ import org.springframework.web.util.UrlPathHelper;
  * @author Rossen Stoyanchev
  * @author Brian Clozel
  * @author Sebastien Deleuze
- * @since 3.1
+ * @since 3.1addCorsMappings
  * @see EnableWebMvc
  * @see WebMvcConfigurer
  */
